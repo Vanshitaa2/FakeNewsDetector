@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #0056b3;
+            padding: 10px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            background-color: #003f7f;
+        }
+        .container {
+            display: none;
+            padding: 40px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .active {
+            display: block;
+        }
+        /* Fade Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Form Styling */
+        textarea {
+            width: 80%;
+            height: 120px;
+            margin: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #003f7f;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>Fake News Detector</header>
+
+    <nav>
+        <a href="#" onclick="showSection('home')">Home</a>
+        <a href="#" onclick="showSection('about')">About</a>
+        <a href="#" onclick="showSection('detector')">Detect News</a>
+        <a href="#" onclick="showSection('contact')">Contact</a>
+    </nav>
+
+    <div id="home" class="container active">
+        <h2>Welcome to the Future of News Verification!</h2>
+        <p>
+            🚀 Empowered by AI, Trusted by You!
+            </p>
+            <p>In a world full of misinformation, our AI-powered Fake News Detector helps you separate facts from fiction in just seconds. Simply enter a news snippet, and let our advanced model analyze its authenticity for you!</p>
+            
+            <p>🎯 Why Use Our Fake News Detector?</p>
+            <p>✅ Fast & Accurate Analysis – AI-driven insights in seconds</p>
+            <p>✅ Simple & User-Friendly – Just Paste, Click, and Verify!</p>
+            <p>✅ Built for Everyone – From researchers to curious minds; For everyone who is eager to know whether what we read is right or not?</p>
+            
+            
+            <p>🔎 Ready to uncover the truth? Head over to our <h3><a href="#detector">Detect News </a>
+            </h3> section and give it a try!
+        </p>
+    </div>
+
+    <div id="about" class="container">
+        <h2>About Us</h2>
+        <p>In today's digital world, misinformation spreads faster than ever. Our Fake News Detector is designed to help you verify the authenticity of news articles using cutting-edge AI and Natural Language Processing (NLP).</p>
+        
+        <p><h3>🔍 How It Works?</h3></p>
+
+        <p>Our system analyzes the given news text and predicts whether it's real or fake based on a deep learning model("roberta-base-openai-detector" model from the Hugging Face Transformers library) trained on diverse datasets.</p>
+        <p>✨ Why Use Our Fake News Detector?</p>
+        <p>✔️ AI-Powered Analysis – Uses advanced machine learning techniques to detect fake news.</p>
+        <p>✔️ Easy to Use – Just enter the news text and get instant results.</p>
+        <p>✔️ Reliable & Accurate – Based on a state-of-the-art NLP model.</p>
+        <p>✔️ Free & Accessible – A simple and effective tool for everyone.</p>
+
+        <p>Stay informed, stay aware, and verify before you believe! 🚀</p>
+    </div>
+
+
+    <div id="detector" class="container">
+        <h2>Fake News Detector</h2>
+
+
+        <p>Disclaimer:The results are not 100% true. Results may vary.</p>
+
+        <textarea id="newsInput" placeholder="Enter news text here..."></textarea>
+        <br>
+        <button onclick="checkFakeNews()">Check</button>
+        <div id="result"></div>
+    </div>
+
+    <div id="contact" class="container">
+        <h2>Contact Us</h2>
+        <p>Owner: Vanshita</p>
+        <p>Email: vanshitaa2@gmail.com</p>
+
+        <p>Feel free to contact us!!</p>
+    </div>
+
+    <footer>
+        &copy; 2025 Fake News Detector by Vanshita | All rights reserved.
+    </footer>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.container').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        async function checkFakeNews() {
+            let text = document.getElementById("newsInput").value;
+            let resultDiv = document.getElementById("result");
+
+            if (!text.trim()) {
+                resultDiv.innerText = "❌ Please enter some text to analyze.";
+                return;
+            }
+
+            resultDiv.innerText = "🔍 Analyzing...";
+
+            fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerText = `✅ Prediction: ${data.label}, Confidence: ${data.score.toFixed(2)}`;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                resultDiv.innerText = "❌ Error connecting to server. Make sure the backend is running.";
+            });
+        }
+    </script>
+
+</body>
+</html>
